@@ -1,0 +1,14 @@
+nop
+nop
+// lui 1,514
+// addi 1,1,22
+lui 2,512
+addi 2,2,0
+nand 3, 1, 2
+lui 4,511
+addi 4,4,63
+beq 3, 4, strong
+addi 7, 0, 0
+beq 0, 0, end
+strong: addi 7, 0, 1
+end: halt

@@ -1,0 +1,4 @@
+// NAND
+// BEQ
+movi 1, 5
+nand 1, 2, 3
