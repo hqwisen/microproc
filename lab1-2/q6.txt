@@ -1,0 +1,28 @@
+nop
+nop
+nop
+nop
+// Init r5 with 0x8001 = (10..01)
+// lui 5,512
+// addi 5,5,1
+// Init r6 with Oxffff
+// lui 6,1023
+// addi 6,6,63
+// Setting 0x8000 in r2
+lui 2,512
+addi 2,2,0
+// Putting in r3 r5 NAND r2
+nand 3, 5, 2
+// Putting 0x7fff (011..1) in r4
+lui 4,511
+addi 4,4,63
+// Putting r5 MSB in r7
+beq 3, 4, strong
+addi 7, 0, 0
+beq 0, 0, shiftreg
+strong: addi 7, 0, 1
+shiftreg: add 5, 5, 5
+add 6, 6, 6
+// add MSB to r6
+add 6, 6, 7
+end: halt
