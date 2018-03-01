@@ -1,0 +1,29 @@
+nop 
+nop
+nop
+nop
+// TODO what about point 4 of rules: RAM reset ?
+// Test value in r1 and r2
+// movi 1, 0x0003
+// movi 2, 0x0005
+// If r1 or r2 = 0, r3 stays at 0
+beq 1, 0, end
+beq 2, 0, end
+// FIXME: necessary (RAM reset ??); r5 used as a loop counter (init. to 0)
+movi 5, 0x0000
+// for r5 in range(r2) 
+loop: beq 5, 2, end 
+addi 5, 5, 0x0001
+// 10..0 in r7
+movi 7, 0x8000
+// r6 = r3 nand 0x8000
+nand 6, 3, 7
+// Actual operation r3 + r1, r2 times
+add 3, 3, 1 
+// if r6 = 0x7fff => MSB was 1 for r3 therefore CF is on
+movi 7, 0x7fff
+beq 6, 7, cfon
+beq 0, 0, loop
+cfon: addi 4, 4, 0x0001
+beq 0, 0, loop
+end: halt
