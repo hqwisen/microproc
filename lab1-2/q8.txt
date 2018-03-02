@@ -1,0 +1,57 @@
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+// ADD 1000...0 for nand to know MSB
+movi 7, 32768
+nand 1, 3, 7
+nand 2, 5, 7
+
+// Now we check if we have a CF. 3 cases : 11, 01-10, 00
+
+// CHECK if 11 in MSB for both then CF = 1
+movi 7, 32767
+beq 1, 7, havefirst
+beq 2, 7, havesecond
+
+// Case with 00
+add 3, 3, 5
+add 4, 4, 6
+halt
+
+// Case with 10
+havefirst: beq 2, 7, havetwoone
+add 3, 3, 5
+movi 7, 32768
+nand 1, 3, 7
+movi 7, 32767
+beq 1, 7, withoutcf
+add 4, 4, 6
+addi 4, 4, 1
+halt
+
+// If there is no CF
+withoutcf: add 4, 4, 6
+halt
+
+
+// Case with 01
+havesecond: add 3, 3, 5
+movi 7, 32768
+nand 1, 3, 7
+movi 7, 32767
+beq 1, 7, withoutcf
+add 4, 4, 6
+addi 4, 4, 1
+halt
+
+
+// Case with 11
+havetwoone: add 3, 3, 5
+add 4, 4, 6
+addi 4, 4, 1
+halt
