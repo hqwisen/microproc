@@ -2,27 +2,30 @@ nop
 nop
 nop
 nop
-// TODO what about point 4 of rules: RAM reset ?
-// Test value in r1 and r2
-// movi 1, 0x0003
-// movi 2, 0x0005
+// IDEA: r3 + r1, r2 times with r3 init. to 0
+movi 3, 0x0000
 // If r1 or r2 = 0, r3 stays at 0
 beq 1, 0, end
 beq 2, 0, end
-// FIXME: necessary (RAM reset ??); r5 used as a loop counter (init. to 0)
+
+// r5: loop counter
 movi 5, 0x0000
 // for r5 in range(r2)
 loop: beq 5, 2, end
 addi 5, 5, 0x0001
-// 10..0 in r7
+
+// 10..0 in r7 (to check MSB)
 movi 7, 0x8000
-// r6 = r3 nand 0x8000
+// r6, r7 = r3, r1 nand 0x8000
 nand 6, 3, 7
 nand 7, 1, 7
+
 // Actual operation r3 + r1, r2 times
 add 3, 3, 1
+
 // Check if r1 and r3 have the same MSB
 beq 6, 7, samemsb
+
 // notSameMSB: if result (in r3) has 0 MSB => CF on
 // Put in r6: r3 nand 0x8000
 movi 7, 0x8000
@@ -31,12 +34,16 @@ nand 6, 3, 7
 movi 7, 0xffff
 beq 6, 7, cfon
 beq 0, 0, cfoff
+
 // samemsb: 0xffff => MSB = 0 therefore CF off, otherwise CF on
 samemsb: movi 7, 0xffff
 beq 6, 7, cfoff
 beq 0, 0, cfon
+
 cfon: addi 4,4,1
 beq 0,0, loop
+
 cfoff: nop
 beq 0,0,loop
+
 end: halt
