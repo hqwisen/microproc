@@ -4,16 +4,18 @@ nop
 nop
 
 // test value in r1, r2 (commented if running test)
-// movi 1, 0x0001
-// movi 2, 0x0003
+movi 1, 0xa060
+movi 2, 0x88dc
 
-// Setting empty value in (r4, r3) if r1 or r2 is null
-// movi 3, 0x0000
-// movi 4, 0x0000
+sw 1, 0, 1
+sw 2, 0, 2
+
 
 // If r2 null, r3 and r4 stays at 0
 // beq 2, 0, end
 
+// Setting empty value in (r4, r3) if r1 or r2 is null
+movi 3, 0x0000
 movi 4, 0x0000
 
 // init. mask
@@ -33,6 +35,7 @@ nand 6, 5, 2
 nand 7, 6, 6 // inverse the nand => and
 // if mask and result are equal => bit is 1 in r2 that match the mask
 beq 5, 7, op
+sw 5, 0, 5
 beq 0, 0, shift
 
 // Addition of (r4, r3) + (r7, r6)
