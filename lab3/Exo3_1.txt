@@ -1,0 +1,27 @@
+// Valeurs input
+movi 1, 100
+movi 2, 99
+movi 3, 0	// Pas obligé
+// MASK
+movi 7,1
+// Compteurs 
+movi 4,0
+movi 6,16
+
+// To make AND , (A NAND B) NAND (A NAND B)
+boucle: nand 5,2,7
+nand 5,5,5
+beq 5,7,ajout
+beq 0,0,inc
+
+ajout: movi 5,0 // Pas obligé
+sha 5,1,4
+add 3,3,5
+beq 0,0,inc
+
+inc: add 7,7,7
+addi 4,4,1
+beq 4,6,end
+beq 0,0,boucle
+
+end: halt
