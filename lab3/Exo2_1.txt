@@ -1,0 +1,26 @@
+movi 1,-1
+movi 2,-99
+movi 5,0x8000 
+// check signed bit
+nand 3,1,5
+nand 4,2,5
+beq 3,4, samemsb
+//not same signed bit
+movi 5,0xFFFF
+beq 4,5, lower
+beq 0,0, notlower
+//check every bit by shifting to the left (adding themself)
+checkmsb: nand 3,1,5
+nand 4,2,5
+beq 3,4,samemsb //not same msb
+movi 5,0xFFFF
+beq 3,5,lower 
+//not lower
+notlower: movi 3,0x0000
+beq 0,0,end
+lower: movi 3,1
+beq 0,0,end
+samemsb: add 1,1,1
+add 2,2,2
+beq 0,0, checkmsb
+end: halt
