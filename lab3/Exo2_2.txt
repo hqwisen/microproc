@@ -1,0 +1,9 @@
+movi 1,-5
+movi 2,-100
+bl 1,2,lower
+movi 3,0
+beq 0,0, end
+lower: movi 3,1
+end: halt
+
+//be careful with overflow numbers (movi 32768 = movi -32768) 
