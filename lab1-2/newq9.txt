@@ -3,26 +3,39 @@ nop
 nop
 nop
 
-movi 1, 0x1767
-movi 2, 0xAA67
+// test value in r1, r2 (commented if running test)
+// movi 1, 0x0001
+// movi 2, 0x0003
+
+// Setting empty value in (r4, r3) if r1 or r2 is null
+// movi 3, 0x0000
+// movi 4, 0x0000
+
+// If r2 null, r3 and r4 stays at 0
+// beq 2, 0, end
 
 movi 4, 0x0000
-addi 3, 1, 0
 
+// init. mask
 movi 5, 0x0001
 
+// (r7, r6) stores shifted r1
 movi 7, 0x0000
 addi 6, 1, 0
 
-loop: sw 6, 0, 6 // save r6 in ram
+// loop end when r6 is shifted 16 times i.e. = 0 (# of bits of REG)
+loop: beq 6, 0, end
+sw 6, 0, 6 // save r6 in ram
 sw 7, 0, 7 // save r7 in ram
 
+// See if need to add (based on r2 bits that match the mask in r5)
 nand 6, 5, 2
-nand 7, 5, 5
+nand 7, 6, 6 // inverse the nand => and
+// if mask and result are equal => bit is 1 in r2 that match the mask
 beq 5, 7, op
 beq 0, 0, shift
-// Addition of (r4, r3) + (r7, r6)
 
+// Addition of (r4, r3) + (r7, r6)
 op: lw 6, 0, 6
 lw 7, 0, 7
 
@@ -30,7 +43,7 @@ sw 1, 0, 1
 sw 2, 0, 2
 sw 5, 0, 5
 
-//////// START OF 32 BITS ADD ///////////////
+/////////////// Start of 32 bits addition (r7, r6) + (r4, r3) ///////////////
 
 // ADD 10...0 for nand to know MSB
 movi 5, 0x8000
@@ -44,46 +57,53 @@ movi 5, 0x7fff
 beq 1, 5, havefirst
 beq 2, 5, havesecond
 
-// Case with 00
+// Case with 00, no CF => simple add
 add 3, 3, 6
 add 4, 4, 7
-halt
+beq 0, 0, shift
 
 havefirst: beq 2, 5, havetwoone
-// Case with 10
+// Case with 10-01
 havesecond: add 3, 3, 6
 movi 5, 0x8000
 nand 1, 3, 5
 movi 5, 0x7fff
 beq 1, 5, withoutcf
+// with CF here
 add 4, 4, 7
 addi 4, 4, 1
-halt
+beq 0, 0, shift
 
 // If there is no CF
-withoutcf: add 4, 4, 6
-halt
+withoutcf: add 4, 4, 7
+beq 0, 0, shift
 
 // Case with 11
 havetwoone: add 3, 3, 6
 add 4, 4, 7
 addi 4, 4, 1
-halt
+beq 0, 0, shift
 
-/////// END OF 32 VITS ADD //////////
+/////////////// End of 32 bits add. ///////////////
 
-
-shift:
+// Shifting (r7, r6)
+// NOTE: even if we lw r6 and r7 in op
+// when not doing the op, the regs must still load back
+shift: lw 6, 0, 6
+lw 7, 0, 7
 movi 5, 0x8000
 nand 1, 6, 5
 add 6, 6, 6 // shift left r6
 add 7, 7, 7 // shift left r7
 movi 5, 0xffff
-// if r1 = 0xfff => no CF
+// if r1 = 0xffff => no CF
 beq 1, 5, shiftmask
 addi 7, 7, 1
 // shift mask r5
 shiftmask: lw 5, 0, 5
 add 5, 5, 5
+// load back r1 and r2
+lw 1, 0, 1
+lw 2, 0, 2
 beq 0, 0, loop
 end: halt
