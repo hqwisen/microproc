@@ -4,8 +4,10 @@ nop
 nop
 
 // test value in r1, r2 (commented if running test)
-movi 1, 0xa060
-movi 2, 0x88dc
+// movi 1, 0xa060
+// movi 2, 0x88dc
+// movi 1, 0x0001
+// movi 2, 0x0001
 
 sw 1, 0, 1
 sw 2, 0, 2
@@ -18,17 +20,26 @@ sw 2, 0, 2
 movi 3, 0x0000
 movi 4, 0x0000
 
-// init. mask
-movi 5, 0x0001
-
 // (r7, r6) stores shifted r1
 movi 7, 0x0000
 addi 6, 1, 0
 
+// init counter in RAM address 10 (arbitrary)
+add 5, 0, 0
+sw 5, 0, 10
+
+// init. mask
+movi 5, 0x0001
+
 // loop end when r6 is shifted 16 times i.e. = 0 (# of bits of REG)
-loop: beq 6, 0, end
-sw 6, 0, 6 // save r6 in ram
+loop: sw 6, 0, 6 // save r6 in ram
 sw 7, 0, 7 // save r7 in ram
+
+lw 6, 0, 10
+addi 7, 0, 17 // 16 cycle (we check starting at 1 that's why 17)
+addi 6, 6, 1
+sw 6, 0, 10
+beq 6, 7, end
 
 // See if need to add (based on r2 bits that match the mask in r5)
 nand 6, 5, 2
