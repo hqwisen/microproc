@@ -1,0 +1,6 @@
+addi 1, 1, -64
+addi 2, 2, -64
+
+// r1 * r2 = (r4, r3), i.e. r3 = LSB, r4 = MSB
+mul 4, 1, 2
+end: halt
