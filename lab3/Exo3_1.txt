@@ -13,15 +13,13 @@ movi 4, 0x0000
 movi 7, 0x0000
 addi 6, 1, 0
 
-// init counter in RAM address 10 (arbitrary)
+// init counter in r1 
 add 1, 0, 0
 
 // init. mask
 movi 5, 0x0001
 
-// loop end when r6 is shifted 16 times i.e. = 0 (# of bits of REG)
 loop: sw 7, 0, 7 // save r7 in ram
-
 addi 7, 0, 17 // 16 cycle (we check starting at 1 that's why 17)
 addi 1, 1, 1
 beq 1, 7, end
@@ -46,7 +44,7 @@ addi 4, 4, 1
 // when not doing the op, the regs must still load back
 shift: lw 7, 0, 7
 add 7, 7, 7 // shift left r7
-add 6, 6, 6, 1 // shift left r6
+add 6, 6, 6, 1 // shift left r6, if overflow add it to r7
 beq 0, 0, shiftmask
 addi 7, 7, 1
 
