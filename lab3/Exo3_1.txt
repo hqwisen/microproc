@@ -1,27 +1,56 @@
-// Valeurs input
-movi 1, 100
-movi 2, 99
-movi 3, 0	// Pas obligé
-// MASK
-movi 7,1
-// Compteurs 
-movi 4,0
-movi 6,16
+nop
+nop
+nop
+nop
+// movi 1, 0xFFFF
+// movi 2, 0x0001
 
-// To make AND , (A NAND B) NAND (A NAND B)
-boucle: nand 5,2,7
-nand 5,5,5
-beq 5,7,ajout
-beq 0,0,inc
+// Setting empty value in (r4, r3) if r1 or r2 is null
+movi 3, 0x0000
+movi 4, 0x0000
 
-ajout: movi 5,0 // Pas obligé
-sha 5,1,4
-add 3,3,5
-beq 0,0,inc
+// (r7, r6) stores shifted r1
+movi 7, 0x0000
+addi 6, 1, 0
 
-inc: add 7,7,7
-addi 4,4,1
-beq 4,6,end
-beq 0,0,boucle
+// init counter in RAM address 10 (arbitrary)
+add 1, 0, 0
 
+// init. mask
+movi 5, 0x0001
+
+// loop end when r6 is shifted 16 times i.e. = 0 (# of bits of REG)
+loop: sw 7, 0, 7 // save r7 in ram
+
+addi 7, 0, 17 // 16 cycle (we check starting at 1 that's why 17)
+addi 1, 1, 1
+beq 1, 7, end
+
+// See if need to add (based on r2 bits that match the mask in r5)
+and 7, 5, 2
+// if mask and result are equal => bit is 1 in r2 that match the mask
+beq 5, 7, op
+beq 0, 0, shift
+
+// Addition of (r4, r3) + (r7, r6)
+
+op: lw 7, 0, 7
+add 4, 4, 7
+add 3, 3, 6, 1
+beq 0, 0, shift
+addi 4, 4, 1
+
+// Shifting (r7, r6)
+
+// NOTE: even if we lw r6 and r7 in op
+// when not doing the op, the regs must still load back
+shift: lw 7, 0, 7
+add 7, 7, 7 // shift left r7
+add 6, 6, 6, 1 // shift left r6
+beq 0, 0, shiftmask
+addi 7, 7, 1
+
+// shift mask r5
+shiftmask: add 5, 5, 5
+beq 0, 0, loop
 end: halt

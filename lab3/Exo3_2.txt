@@ -1,6 +1,9 @@
-addi 1, 1, -64
-addi 2, 2, -64
-
+nop
+nop
+nop
+nop
 // r1 * r2 = (r4, r3), i.e. r3 = LSB, r4 = MSB
-mul 4, 1, 2
+// First we put LSB in r5, and move to r3
+mul 5, 1, 2
+addi 3, 5, 0
 end: halt
